@@ -10,6 +10,7 @@ from flask import Flask
 import requests
 import string
 import itertools
+import operator
 
 boards = ['news', 'po', 'b']
 
@@ -69,9 +70,11 @@ def hello_world():
             thread for thread in map(
                 thread2html, 
                 sorted(
-                    itertools.chain.from_iterable(map(get_threads, boards)), 
-                    key=lambda thread: thread['score'], 
-                    reverse=True,
+                    itertools.chain.from_iterable(
+                        map(get_threads, boards)
+                    ), 
+                    key     = operator.itemgetter('score'), 
+                    reverse = True,
                 )
             )
         )
