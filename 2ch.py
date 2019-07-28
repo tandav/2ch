@@ -8,14 +8,16 @@ export FLASK_APP=2ch.py; python3 -m flask run --host=0.0.0.0 &
 
 from flask import Flask
 import requests
+import string
 
 boards = ['news', 'po', 'b']
 
 def get_threads(board): return requests.get(f'https://2ch.hk/{board}/threads.json').json()['threads']
 
-template = '''
+template = string.Template(
+'''
 <table>
-<!-- placeholder -->    
+$threads
 </table>
 
 <style>
@@ -35,7 +37,7 @@ a { color: black; text-decoration: none; }
 a:visited { color: rgb(200,200,200); }
 a:hover { text-decoration: underline; }
 </style>
-'''
+''')
 
 app = Flask(__name__)
 
@@ -69,10 +71,7 @@ def hello_world():
             </tr>
         '''
 
-    html_str = (
-        template
-        .replace('<!-- placeholder -->', threads_str)
-    )
+    html_str = template.substitute(threads=threads_str)
 
     # html = pathlib.Path(__file__).parent /'2ch.html'
     # html.write_text(html_str)
