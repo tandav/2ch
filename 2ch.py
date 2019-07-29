@@ -41,7 +41,12 @@ app = Flask(__name__)
 
 @app.route('/')
 def hello_world():
-    return string.Template(
+    _ = map(get_threads, boards)
+    _ = itertools.chain.from_iterable(_)
+    _ = sorted(_, key = operator.itemgetter('score'), reverse = True,)
+    _ = map(thread2html, _)
+    _ = ''.join(thread for thread in _)
+    _ = string.Template(
     '''
     <table>
     $threads
@@ -65,17 +70,6 @@ def hello_world():
     a:hover { text-decoration: underline; }
     </style>
     '''
-    ).substitute(
-        threads = ''.join(
-            thread for thread in map(
-                thread2html, 
-                sorted(
-                    itertools.chain.from_iterable(
-                        map(get_threads, boards)
-                    ), 
-                    key     = operator.itemgetter('score'), 
-                    reverse = True,
-                )
-            )
-        )
-    )
+    ).substitute(threads=_)
+
+    return _
