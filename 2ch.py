@@ -1,4 +1,5 @@
 '''
+https://2ch.hk/api
 TODO: githooks (git push github, git push prod) / or git hooks on github
 sudo apt update
 sudo apt -y upgrade
@@ -19,7 +20,8 @@ boards = ['news', 'po', 'b']
 
 
 def ago(e):
-    e *= 1000
+    # e: pass timedelta between timestamps in 1579812524 format
+    e *= 1000 # convert to 1579812524000 format
     t = round(e / 1000)
     n = round(t /   60)
     r = round(n /   60)
@@ -41,7 +43,7 @@ def ago(e):
     else:        return str(a) +   ' years ago'
 
 def get_threads(board):
-    board_threads = requests.get(f'https://2ch.hk/{board}/threads.json').json()['threads']
+    board_threads = requests.get(f'https://2ch.hk/{board}/catalog.json').json()['threads']
     for thread in board_threads:
         thread['board'] = board # add board label
     return board_threads
