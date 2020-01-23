@@ -19,6 +19,7 @@ boards = ['news', 'po', 'b']
 
 
 def ago(e):
+    e *= 1000
     t = round(e / 1000)
     n = round(t /   60)
     r = round(n /   60)
@@ -89,7 +90,8 @@ def hello_world():
 
     <style>
     table {
-        margin: 0px 150px 0px 150px;
+        white-space: nowrap;
+        margin: auto;
         background-color: rgba(0, 0, 0, 0.03);
     }
 
