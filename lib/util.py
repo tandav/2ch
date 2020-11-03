@@ -1,6 +1,7 @@
 import datetime
 import itertools
 import operator
+import string
 
 
 def ago(e):
@@ -48,11 +49,40 @@ def thread2html(subject, time_ago, posts_count, board, url):
     '''
 
 
-def html_table(get_threads, boards, time_key, posts_key, thread2html):
+def make_html(x):
+    return string.Template(
+    '''
+    <table>
+    $threads
+    </table>
+
+    <style>
+    table {
+        white-space: nowrap;
+        margin: auto;
+        background-color: rgba(0, 0, 0, 0.03);
+    }
+
+    th {
+        font-family: Verdana;
+        font-size: 9pt;
+        font-weight: normal;
+        text-align: left;
+    }
+
+    a { color: black; text-decoration: none; }
+    a:visited { color: rgb(200,200,200); }
+    a:hover { text-decoration: underline; }
+    </style>
+    '''
+    ).substitute(threads=x)
+
+
+def get_html(get_threads, boards, time_key, posts_key, thread2html):
     _ = map(get_threads, boards)
     _ = itertools.chain.from_iterable(_)
     _ = add_ago_to_last_day_threads(_, time_key)
     _ = sorted(_, key = operator.itemgetter(posts_key), reverse = True,)
     _ = map(thread2html, _)
     _ = ''.join(thread for thread in _)
-    return _
+    return make_html(_)

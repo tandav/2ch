@@ -14,7 +14,9 @@ import lib._2ch
 import lib._4ch
 import string
 
+
 app = Flask(__name__, static_folder='', static_url_path='')
+
 
 @app.route('/')
 def root():
@@ -26,41 +28,13 @@ def root():
     <a href='https://github.com/tandav/2ch'>github<a>
     '''
 
-def make_html(x):
-    return string.Template(
-    '''
-    <table>
-    $threads
-    </table>
-
-    <style>
-    table {
-        white-space: nowrap;
-        margin: auto;
-        background-color: rgba(0, 0, 0, 0.03);
-    }
-
-    th {
-        font-family: Verdana;
-        font-size: 9pt;
-        font-weight: normal;
-        text-align: left;
-    }
-
-    a { color: black; text-decoration: none; }
-    a:visited { color: rgb(200,200,200); }
-    a:hover { text-decoration: underline; }
-    </style>
-    '''
-    ).substitute(threads=x)
-
 
 @app.route('/2ch')
-def get2ch(): return make_html(lib._2ch.html_table())
+def get2ch(): return lib._2ch.get_html()
 
 
 @app.route('/4ch')
-def get4ch(): return make_html(lib._4ch.html_table())
+def get4ch(): return lib._4ch.get_html()
 
 
 if __name__ == "__main__":

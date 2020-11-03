@@ -21,5 +21,5 @@ def thread2html(thread):
     return util.thread2html(subject, time_ago, posts_count, board, url)
     
 
-def html_table(boards = ('news', 'po', 'b')):
-    return util.html_table(get_threads, boards, 'timestamp', 'posts_count', thread2html)
+def get_html(boards = ('news', 'po', 'b')):
+    return util.get_html(get_threads, boards, 'timestamp', 'posts_count', thread2html)
