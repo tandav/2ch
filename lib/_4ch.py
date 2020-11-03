@@ -16,8 +16,8 @@ def get_threads(board):
 
 
 def thread2html(thread):
-    # subject     = html.unescape(thread['com'])[:70]
-    subject     = thread['com'][:70]
+    # subject     = html.unescape(thread['com']).replace('\n', ' ')[:70]
+    subject     = thread['com'].replace('<br>', ' ')[:70]
     time_ago    = thread['time_ago']
     posts_count = thread['replies']
     board       = thread['board']
