@@ -41,7 +41,7 @@ def add_ago_to_last_day_threads(threads, name):
 def thread2html(subject, time_ago, posts_count, board, url):
     return f'''
     <tr>
-        <th><a href='{url}'>{subject}</a></th>
+        <th><a href='{url}'>{subject[:70]}</a></th>
         <th>{time_ago}</th>
         <th>posts {posts_count}</th>
         <th>{board}</th>
