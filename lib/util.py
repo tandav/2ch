@@ -32,8 +32,8 @@ def add_ago_to_last_day_threads(threads, name):
     now = datetime.datetime.now() 
     for thread in threads:
         ts = datetime.datetime.fromtimestamp(thread[name]) # also try lasthit
-        if now - ts > datetime.timedelta(days=1):
-            continue
+        # if now - ts > datetime.timedelta(days=1):
+        #     continue
         thread['time_ago'] = ago(now.timestamp() - ts.timestamp())
         yield thread
 
