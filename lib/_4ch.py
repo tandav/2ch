@@ -1,7 +1,5 @@
 import requests
-import string
 import itertools
-import html
 from . import util
 
 
@@ -16,8 +14,9 @@ def get_threads(board):
 
 
 def thread2html(thread):
-    # subject     = html.unescape(thread['com']).replace('\n', ' ')[:70]
-    subject     = thread.get('sub') or thread.get('com').replace('<br>', ' ') or 'x' * 70
+    # subject     = thread.get('sub') or thread.get('com').replace('<br>', ' ') or 'x' * 70
+    subject     = thread.get('sub') or thread.get('com') or 'x' * 70
+    subject     = util.html2text(subject)
     time_ago    = thread['time_ago']
     posts_count = thread['replies']
     board       = thread['board']

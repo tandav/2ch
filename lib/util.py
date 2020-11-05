@@ -2,6 +2,18 @@ import datetime
 import itertools
 import operator
 import string
+import re
+import html
+
+
+def html2text(htm):
+    ret = html.unescape(htm)
+    ret = ret.translate({8209: ord('-'), 8220: ord('"'), 8221: ord('"'), 160: ord(' '),})
+    ret = re.sub(r"\s", " ", ret, flags = re.MULTILINE)
+    ret = re.sub("<br>|<br />|</p>|</div>|</h\d>", ' ', ret, flags = re.IGNORECASE)
+    ret = re.sub('<.*?>', ' ', ret, flags=re.DOTALL)
+    ret = re.sub(r"  +", " ", ret)
+    return ret
 
 
 def ago(e):
@@ -41,7 +53,7 @@ def add_ago_to_last_day_threads(threads, name):
 def thread2html(subject, time_ago, posts_count, board, url):
     return f'''
     <tr>
-        <th><a href='{url}'>{subject[:70]}</a></th>
+        <th><a href='{url}' target='_blank'>{subject}</a></th>
         <th>{time_ago}</th>
         <th>posts {posts_count}</th>
         <th>{board}</th>
@@ -61,6 +73,7 @@ def make_html(x):
         white-space: nowrap;
         margin: auto;
         background-color: rgba(0, 0, 0, 0.03);
+        border-spacing: 30px 0;
     }
 
     th {
@@ -68,6 +81,9 @@ def make_html(x):
         font-size: 9pt;
         font-weight: normal;
         text-align: left;
+        max-width: 40vw;
+        text-overflow: ellipsis;
+        overflow: hidden;
     }
 
     a { color: black; text-decoration: none; }
