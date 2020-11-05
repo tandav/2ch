@@ -25,5 +25,5 @@ def thread2html(thread):
     return util.thread2html(subject, time_ago, posts_count, board, url)
 
 
-def get_html(boards = ('news', 'po', 'b')):
+def get_html(boards = ('news', 'pol', 'b')):
     return util.get_html(get_threads, boards, 'time', 'replies', thread2html)
