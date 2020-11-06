@@ -11,7 +11,8 @@ def mapper(thread):
     # title = html.escape(title)
     # title       = util.html2text(title)
     # thread['title'] = thread['comment']#[:100]
-    thread['time_ago'] = util.add_ago_to_last_day_threads(thread['timestamp'])
+    thread['dt'] = util.add_ago_to_last_day_threads(thread['timestamp'])
+    thread['time_ago'] = util.ago(thread['dt'])
     return thread
 
 

@@ -6,7 +6,8 @@ from . import util
 def mapper(thread):
     thread['title'] = thread.get('sub') or thread.get('com') or 'x' * 70
     thread['timestamp'] = thread['time']
-    thread['time_ago'] = util.add_ago_to_last_day_threads(thread['timestamp'])
+    thread['dt'] = util.add_ago_to_last_day_threads(thread['timestamp'])
+    thread['time_ago'] = util.ago(thread['dt'])
     thread['posts_count'] = thread['replies']
     return thread
 
