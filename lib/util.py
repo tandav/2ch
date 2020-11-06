@@ -44,9 +44,7 @@ def ago(e):
 
 
 def add_ago_to_last_day_threads(timestamp):
-    now = datetime.datetime.now()
-    ts = datetime.datetime.fromtimestamp(timestamp)
-    return ago(now.timestamp() - ts.timestamp())
+    return (datetime.datetime.now() - datetime.datetime.fromtimestamp(timestamp)).total_seconds()
 
 
 def thread2html(thread):
