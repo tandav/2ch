@@ -6,11 +6,14 @@ import re
 import html
 
 
-def html2text(htm):
+def html2text(htm, newline=False):
     ret = html.unescape(htm)
     ret = ret.translate({8209: ord('-'), 8220: ord('"'), 8221: ord('"'), 160: ord(' '),})
     ret = re.sub(r"\s", " ", ret, flags = re.MULTILINE)
-    ret = re.sub("<br>|<br />|</p>|</div>|</h\d>", ' ', ret, flags = re.IGNORECASE)
+    if newline:
+        ret = re.sub("<br>|<br />|</p>|</div>|</h\d>", '\n', ret, flags = re.IGNORECASE)
+    else:
+        ret = re.sub("<br>|<br />|</p>|</div>|</h\d>", ' ', ret, flags = re.IGNORECASE)
     ret = re.sub('<.*?>', ' ', ret, flags=re.DOTALL)
     ret = re.sub(r"  +", " ", ret)
     return ret
@@ -40,20 +43,21 @@ def ago(e):
     else:        return str(a) +   ' years ago'
 
 
-def add_ago_to_last_day_threads(threads, name):
-    now = datetime.datetime.now() 
-    for thread in threads:
-        ts = datetime.datetime.fromtimestamp(thread[name]) # also try lasthit
-        # if now - ts > datetime.timedelta(days=1):
-        #     continue
-        thread['time_ago'] = ago(now.timestamp() - ts.timestamp())
-        yield thread
+def add_ago_to_last_day_threads(timestamp):
+    now = datetime.datetime.now()
+    ts = datetime.datetime.fromtimestamp(timestamp)
+    return ago(now.timestamp() - ts.timestamp())
 
 
-def thread2html(subject, time_ago, posts_count, board, url):
+def thread2html(thread):
+    title = html2text(thread['title'])
+    time_ago = thread['time_ago']
+    board = thread['board']
+    posts_count = thread['posts_count']
+    url = thread['url'] 
     return f'''
     <tr>
-        <th><a href='{url}' target='_blank'>{subject}</a></th>
+        <th><a href='{url}' target='_blank'>{title}</a></th>
         <th>{time_ago}</th>
         <th>posts {posts_count}</th>
         <th>{board}</th>
@@ -94,11 +98,15 @@ def make_html(x):
     ).substitute(threads=x)
 
 
-def get_html(get_threads, boards, time_key, posts_key, thread2html):
-    _ = map(get_threads, boards)
+def boards_threads(board_threads, boards):
+    _ = map(board_threads, boards)
     _ = itertools.chain.from_iterable(_)
-    _ = add_ago_to_last_day_threads(_, time_key)
-    _ = sorted(_, key = operator.itemgetter(posts_key), reverse = True,)
+    return _
+
+
+def get_html(module, sortby='posts_count'):
+    _ = boards_threads(module.board_threads, module.boards)
+    _ = sorted(_, key = operator.itemgetter(sortby), reverse = True)
     _ = map(thread2html, _)
     _ = ''.join(thread for thread in _)
     return make_html(_)

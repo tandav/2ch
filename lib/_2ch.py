@@ -2,24 +2,26 @@ import requests
 import string
 import itertools
 import operator
+import html
 from . import util
 
 
-def get_threads(board):
-    board_threads = requests.get(f'https://2ch.hk/{board}/catalog.json').json()['threads']
-    for thread in board_threads:
-        thread['board'] = board # add board label
-    return board_threads
+def mapper(thread):
+    thread['title'] = thread['subject']
+    # title = html.escape(title)
+    # title       = util.html2text(title)
+    # thread['title'] = thread['comment']#[:100]
+    thread['time_ago'] = util.add_ago_to_last_day_threads(thread['timestamp'])
+    return thread
 
 
-def thread2html(thread):
-    subject     = thread['subject'][:70]
-    time_ago    = thread['time_ago']
-    posts_count = thread['posts_count']
-    board       = thread['board']
-    url         = f"https://2ch.hk/{board}/res/{thread['num']}.html"
-    return util.thread2html(subject, time_ago, posts_count, board, url)
-    
+def board_threads(board):
+    threads = requests.get(f'https://2ch.hk/{board}/catalog.json').json()['threads']
+    for thread in threads:
+        thread['board'] = board
+        thread['url'] = f"https://2ch.hk/{board}/res/{thread['num']}.html"
+        thread = mapper(thread)
+    return threads
 
-def get_html(boards = ('news', 'po', 'b')):
-    return util.get_html(get_threads, boards, 'timestamp', 'posts_count', thread2html)
+
+boards = 'news', 'po', 'b'

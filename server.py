@@ -13,10 +13,8 @@ cd 2ch
 python3 server.py
 '''
 
-from flask import Flask
-import lib._2ch
-import lib._4ch
-import string
+from flask import Flask, request
+from lib import _2ch, _4ch, util
 
 
 app = Flask(__name__, static_folder='', static_url_path='')
@@ -34,11 +32,11 @@ def root():
 
 
 @app.route('/2ch')
-def get2ch(): return lib._2ch.get_html()
+def get2ch(): return util.get_html(_2ch, request.args.get('sortby', default='posts_count'))
 
 
 @app.route('/4ch')
-def get4ch(): return lib._4ch.get_html()
+def get4ch(): return util.get_html(_4ch, request.args.get('sortby', default='posts_count'))
 
 
 if __name__ == "__main__":
