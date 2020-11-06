@@ -19,7 +19,9 @@ def board_threads(board):
     threads = list(threads)
     for thread in threads:
         thread['board'] = board
-        thread['url'] = f"https://boards.4chan.org/{board}/thread/{thread['no']}"
+        id_ = thread['no']
+        thread['id'] = id_
+        thread['url'] = f"https://boards.4chan.org/{board}/thread/{id_}"
         thread = mapper(thread)
     return threads
 

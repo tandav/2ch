@@ -20,7 +20,9 @@ def board_threads(board):
     threads = requests.get(f'https://2ch.hk/{board}/catalog.json').json()['threads']
     for thread in threads:
         thread['board'] = board
-        thread['url'] = f"https://2ch.hk/{board}/res/{thread['num']}.html"
+        id_ = thread['num']
+        thread['id'] = id_
+        thread['url'] = f"https://2ch.hk/{board}/res/{id_}.html"
         thread = mapper(thread)
     return threads
 
