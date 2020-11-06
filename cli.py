@@ -71,7 +71,7 @@ while True:
         elif posts_count>= 500: title_color = 196 # red
         print(color_i(title, title_color))
         # print(color.GREEN('=' * 72), color.WHITE(thread['time_ago']))
-        print('─'*100)
+        print(color_i('─'*100, 236))
         time.sleep(sleep_time)
 
 # s = 7777777777777777777777
