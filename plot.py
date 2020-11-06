@@ -62,17 +62,6 @@ TOP_RISING = 40
 TOP_RISING_LAG = 5 # todo time lag instead of index lag
 SLEEP_TIME = 0.2 # sleep time between requests
 
-
-# def threads_2_info(threads):
-#     '''
-#     info:
-#     thread_num: posts_count, subject
-#     '''
-#     info = dict()
-#     for thread in threads:
-#         info[thread['thread_num']] = int(thread['posts_count']), html.unescape(thread['posts'][0]['subject'])
-#     return info
-#
 # def try_get_json(url):
 #     r = rrs.get(url)
 #     try:
@@ -121,7 +110,6 @@ while True:
     d = pd.read_pickle(DB_PATH)#.tail(1000)
 
     if d.shape[0]:
-        print(d.shape[0])
         d = d[d.index > datetime.datetime.now(tz=MSK) - datetime.timedelta(days=1)]
         last_row = d.iloc[-1]
         d = d.drop(columns=last_row[last_row.isna()].index)
@@ -138,7 +126,8 @@ while True:
     print(now, d.shape)
     d.astype('float32').to_pickle(DB_PATH)
 
-    diff = d.iloc[-TOP_RISING_LAG - 1:].diff().mean()
+    diff = d.loc[(now - d.index).seconds < 60 * 60 * 1.5].diff().mean()
+    # diff = d.iloc[-TOP_RISING_LAG - 1:].diff().mean()
     mean = d.mean(axis=1)
     std  = d.std(axis=1)
 
@@ -184,7 +173,9 @@ while True:
             #         color = font_color,
         )
     if d.shape[0] > TOP_RISING_LAG:
-        plt.axvline(d.index[-TOP_RISING_LAG - 1], linestyle='--', color='black')
+        # (now - d.index).seconds < 60 * 60 * 1.5
+        plt.axvline(d.index[(now - d.index).seconds < 60 * 60 * 1.5][0], linestyle='--', color='black')
+        # plt.axvline(d.index[-TOP_RISING_LAG - 1], linestyle='--', color='black')
     plt.ylim(bottom=MIN_POSTS)
     plt.tight_layout()
 
