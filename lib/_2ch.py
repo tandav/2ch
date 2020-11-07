@@ -13,6 +13,7 @@ def mapper(thread):
     # thread['title'] = thread['comment']#[:100]
     thread['dt'] = util.add_ago_to_last_day_threads(thread['timestamp'])
     thread['time_ago'] = util.ago(thread['dt'])
+    thread['chan'] = '2ch'
     return thread
 
 

@@ -9,6 +9,7 @@ def mapper(thread):
     thread['dt'] = util.add_ago_to_last_day_threads(thread['timestamp'])
     thread['time_ago'] = util.ago(thread['dt'])
     thread['posts_count'] = thread['replies']
+    thread['chan'] = '4ch'
     return thread
 
 
