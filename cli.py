@@ -21,11 +21,7 @@ def color_i(s, i):
 
 
 while True:
-    threads = itertools.chain(
-        util.boards_threads(_4ch.board_threads, _4ch.boards),
-        util.boards_threads(_2ch.board_threads, _2ch.boards),
-    )
-
+    threads = util.get_threads()
     threads = filter(lambda thread: thread['dt'] < 60 * 60 * 1.5, threads)
     threads = list(threads)
     random.shuffle(threads)
@@ -37,14 +33,14 @@ while True:
         posts_count = thread['posts_count']
         sleep_time = round(-12 * 0.7 ** (0.03 * posts_count) + 12, 1)
 
-        print(
+        print('{:<14} {:<10} {:>10} {:>18} {:>10} {}'.format(
             color.YELLOW(f'{i}..{len(threads)}'),
             color.BLUE(thread['board']),
             color.WHITE(f"{posts_count:>4}"),
             thread['time_ago'],
             color.CYAN(f'{sleep_time} sleep'),
             thread['url'],
-        )
+        ))
         # title_color = color.GREEN if posts_count >= 100 else color.WHITE
         if   posts_count <   5: title_color = 236
         elif posts_count <  10: title_color = 237

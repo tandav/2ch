@@ -4,6 +4,8 @@ import operator
 import string
 import re
 import html
+import time
+from . import _4ch, _2ch
 
 
 def html2text(htm, newline=False):
@@ -108,3 +110,17 @@ def get_html(module, sortby='posts_count'):
     _ = map(thread2html, _)
     _ = ''.join(thread for thread in _)
     return make_html(_)
+
+
+def get_threads():
+    for trial in itertools.count():
+        try:
+            threads = list(itertools.chain(
+                boards_threads(_4ch.board_threads, _4ch.boards),
+                boards_threads(_2ch.board_threads, _2ch.boards),
+            ))
+        except:
+            print(f'bad JSON, trial {trial}, sleep 2 seconds and retry...')
+            time.sleep(2)
+        else:
+            return threads
