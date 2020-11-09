@@ -1,6 +1,7 @@
 import time
 import random
 import itertools
+import difflib
 from lib import util, _4ch, _2ch
 
 
@@ -27,52 +28,46 @@ while True:
     random.shuffle(threads)
 
 
-    for i, thread in enumerate(threads):
+    for i, thread in enumerate(threads, start=1):
         title = thread['title']
         title = util.html2text(title, newline=True)
         posts_count = thread['posts_count']
         sleep_time = round(-12 * 0.7 ** (0.03 * posts_count) + 12, 1)
 
-        print('{:<14} {:<10} {:>10} {:>18} {:>10} {}'.format(
+        title_color = util.color(posts_count)
+        derivative = int(posts_count/thread['dt'] * 1000)
+
+
+        print('{:<14} {:<10} {} {:>10} {:>18} {:>10} {}'.format(
             color.YELLOW(f'{i}..{len(threads)}'),
             color.BLUE(thread['board']),
-            color.WHITE(f"{posts_count:>4}"),
+            posts_count and f'⬆ {derivative}' or '',
+            color.WHITE(f"{posts_count:>4} comments"),
             thread['time_ago'],
             color.CYAN(f'{sleep_time} sleep'),
             thread['url'],
         ))
-        # title_color = color.GREEN if posts_count >= 100 else color.WHITE
-        if   posts_count <   5: title_color = 236
-        elif posts_count <  10: title_color = 237
-        elif posts_count <  15: title_color = 238
-        elif posts_count <  20: title_color = 239
-        elif posts_count <  25: title_color = 240
-        elif posts_count <  30: title_color = 241
-        elif posts_count <  35: title_color = 242
-        elif posts_count <  40: title_color = 243
-        elif posts_count <  45: title_color = 244
-        elif posts_count <  50: title_color = 245
-        elif posts_count <  55: title_color = 246
-        elif posts_count <  60: title_color = 247
-        elif posts_count <  65: title_color = 248
-        elif posts_count <  70: title_color = 249
-        elif posts_count <  75: title_color = 250
-        elif posts_count <  80: title_color = 251
-        elif posts_count <  85: title_color = 252
-        elif posts_count <  90: title_color = 253
-        elif posts_count <  95: title_color = 254
-        elif posts_count < 100: title_color = 255
-        elif posts_count < 300: title_color = 82  # green
-        elif posts_count < 500: title_color = 226 # yellow
-        elif posts_count>= 500: title_color = 196 # red
-        print(color_i(title, title_color))
-        # print(color.GREEN('=' * 72), color.WHITE(thread['time_ago']))
-        print(color_i('─'*100, 236))
-        time.sleep(sleep_time)
 
-# s = 7777777777777777777777
-# for i in range(87, 81, -1):
-# for i in range(256):
-#     print(color_i(i, i))
-    # print(f"\x1b[38;5;{i}m {i}")
-    # print(f'\033[87m{s}\033[0m')
+
+        if comment := thread.get('comment'):
+            comment = util.html2text(comment, newline=True)
+
+            nospace_title   = [c for c in title   if not c.isspace()]
+            nospace_comment = [c for c in comment if not c.isspace()]
+            min_len = min(len(nospace_title), len(nospace_comment))
+
+            ratio = difflib.SequenceMatcher(lambda x: x.isspace(), nospace_title[:min_len], nospace_comment[:min_len]).ratio()
+
+            if ratio < 0.7:
+                print(color_i(title, title_color))
+            print(color_i(comment[:500], title_color))
+        else:
+            print(color_i(title, title_color))
+
+        t0 = time.time()
+        for viral_comment, count in {'4ch': _4ch, '2ch': _2ch}[thread['chan']].viral_comments(thread, 3, min_replies=5):
+            print(color.WHITE(f'[{count} replies]'), end=' ')
+            print(color_i(viral_comment, title_color))
+
+        print(color_i('─'*100, 236))
+        time.sleep(max(sleep_time - (time.time() - t0), 0))

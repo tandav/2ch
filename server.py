@@ -1,5 +1,5 @@
 '''
-https://2ch.hk/api
+https://2ch.hk/api/index.html
 https://github.com/4chan/4chan-API
 TODO: githooks (git push github, git push prod) / or git hooks on github
 

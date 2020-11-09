@@ -8,6 +8,19 @@ import time
 from . import _4ch, _2ch
 
 
+def try_till_success(f, maxtrials=None):
+    it = itertools.count()
+    if maxtrials: it = itertools.islice(it, maxtrials)
+    for trial in it:
+        try:
+            out = f()
+        except:
+            print(f'{trial} failed, sleep 2 seconds and retry...')
+            time.sleep(2)
+        else:
+            return out
+
+
 def html2text(htm, newline=False):
     ret = html.unescape(htm)
     ret = ret.translate({8209: ord('-'), 8220: ord('"'), 8221: ord('"'), 160: ord(' '),})
@@ -101,6 +114,9 @@ def make_html(x):
 def boards_threads(board_threads, boards):
     _ = map(board_threads, boards)
     _ = itertools.chain.from_iterable(_)
+    _ = filter(lambda x: x['dt'] < 60 * 60 * 24 * 1.5, _) # last number is days
+    # _ = filter(lambda x: x['posts_count'] > 20, _)
+    _ = list(_)
     return _
 
 
@@ -113,14 +129,48 @@ def get_html(module, sortby='posts_count'):
 
 
 def get_threads():
-    for trial in itertools.count():
-        try:
-            threads = list(itertools.chain(
-                boards_threads(_4ch.board_threads, _4ch.boards),
-                boards_threads(_2ch.board_threads, _2ch.boards),
-            ))
-        except:
-            print(f'bad JSON, trial {trial}, sleep 2 seconds and retry...')
-            time.sleep(2)
-        else:
-            return threads
+    threads = try_till_success(lambda: list(itertools.chain(
+        boards_threads(_4ch.board_threads, _4ch.boards),
+        boards_threads(_2ch.board_threads, _2ch.boards),
+    )))
+    return threads or []
+    # for trial in itertools.count():
+    #     try:
+    #         threads = list(itertools.chain(
+    #             boards_threads(_4ch.board_threads, _4ch.boards),
+    #             boards_threads(_2ch.board_threads, _2ch.boards),
+    #         ))
+    #     except:
+    #         print(f'bad JSON, trial {trial}, sleep 2 seconds and retry...')
+    #         time.sleep(2)
+    #     else:
+    #         return threads
+
+
+def color(v):
+    if   v <   5: c = 236
+    elif v <  10: c = 237
+    elif v <  15: c = 238
+    elif v <  20: c = 239
+    elif v <  25: c = 240
+    elif v <  30: c = 241
+    elif v <  35: c = 242
+    elif v <  40: c = 243
+    elif v <  45: c = 244
+    elif v <  50: c = 245
+    elif v <  55: c = 246
+    elif v <  60: c = 247
+    elif v <  65: c = 248
+    elif v <  70: c = 249
+    elif v <  75: c = 250
+    elif v <  80: c = 251
+    elif v <  85: c = 252
+    elif v <  90: c = 253
+    elif v <  95: c = 254
+    elif v < 100: c = 255
+    elif v < 200: c = 82  # green
+    elif v < 300: c = 87  # blue
+    elif v < 400: c = 226 # yellow
+    elif v < 500: c = 208 # orange
+    elif v>= 500: c = 196 # red
+    return c
